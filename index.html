@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lector QR → Excel</title>
+
+  <!-- Dependencias externas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+<div class="toast" id="toast">✓ QR registrado</div>
+
+<div class="wrap">
+  <header>
+    <div class="logo-tag">Sistema QR</div>
+    <h1>Lector QR → Excel</h1>
+    <p class="subtitle">Escanea o sube una imagen con código QR · Los datos se guardan y exportan automáticamente</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- ── Cámara ── -->
+    <div class="card">
+      <div class="card-title">📷 Cámara en vivo</div>
+      <div id="video-wrap">
+        <div class="cam-placeholder" id="cam-placeholder">
+          <span class="cam-icon">📷</span>
+          <span>Haz clic en "Iniciar Cámara"<br>para escanear en tiempo real</span>
+        </div>
+        <video id="video" autoplay playsinline style="display:none"></video>
+        <canvas id="canvas"></canvas>
+        <div class="scan-overlay" id="scan-overlay" style="display:none">
+          <div class="scan-frame"><span></span></div>
+          <div class="scan-line"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-cam">Iniciar Cámara</button>
+        <button class="btn btn-danger"  id="btn-stop" style="display:none">Detener</button>
+      </div>
+      <div class="status-bar">
+        <div class="dot" id="cam-dot"></div>
+        <span id="cam-status">Cámara inactiva</span>
+      </div>
+    </div>
+
+    <!-- ── Subir imagen + entrada manual ── -->
+    <div class="card">
+      <div class="card-title">🖼️ Subir imagen QR</div>
+      <label class="upload-zone">
+        <span class="upload-icon">⬆️</span>
+        Arrastra una imagen o haz clic para seleccionar<br>
+        <small style="opacity:.6">PNG, JPG, WEBP soportados</small>
+        <input type="file" id="file-input" accept="image/*">
+      </label>
+
+      <div style="margin-top:20px">
+        <div class="card-title" style="margin-bottom:8px">✏️ Entrada manual</div>
+        <div class="manual-input">
+          <input type="text" id="manual-text" placeholder="Pega o escribe el contenido del QR…">
+          <button class="btn btn-secondary" style="flex:0;white-space:nowrap" onclick="addManual()">Agregar</button>
+        </div>
+      </div>
+
+      <div class="parsed-preview" id="parsed-preview">
+        <div style="font-family:'Syne',sans-serif;font-size:10px;letter-spacing:2px;
+                    color:var(--muted);text-transform:uppercase;margin-bottom:10px">
+          Datos detectados
+        </div>
+        <div id="parsed-rows"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="confirmAdd()">
+          ✓ Confirmar y agregar fila
+        </button>
+      </div>
+
+      <div class="status-bar" style="margin-top:14px">
+        <div class="dot" id="upload-dot"></div>
+        <span id="upload-status">Sin imagen cargada</span>
+      </div>
+    </div>
+
+    <!-- ── Tabla de registros ── -->
+    <div class="card table-card">
+      <div class="table-header">
+        <div>
+          <div class="card-title" style="margin-bottom:4px">📋 Registros capturados</div>
+          <span class="count-badge" id="count-badge">0 registros</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="clearTable()">🗑 Limpiar</button>
+          <button class="btn btn-primary" onclick="exportExcel()" id="btn-export" disabled>⬇ Descargar Excel</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Nombres</th>
+              <th>Ap. Paterno</th>
+              <th>Ap. Materno</th>
+              <th>Cód. Cuenta</th>
+              <th>Carnet de Identidad</th>
+              <th>QR Raw</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr id="empty-row">
+              <td colspan="8">
+                <div class="empty-state">
+                  <span>📄</span>
+                  Aún no hay registros. Escanea un QR o sube una imagen para comenzar.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /.grid -->
+</div><!-- /.wrap -->
+
+<!-- Lógica de la app -->
+<script src="js/app.js"></script>
+</body>
+</html>
